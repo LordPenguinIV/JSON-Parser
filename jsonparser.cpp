@@ -8,114 +8,114 @@
 #include <map>
 #include <chrono>
 
+constexpr auto EPSILON = "E";
+
 
 int main() {
-	std::map<std::string, std::map<std::string, std::string>> lookUpTable;
-	// z : (num)	E : epsilon
-	// WAIT A SECOND, WHY ARE THESE MAPS STRINGS WHEN THEY COULD BE CHARS????????
-	lookUpTable["O"]["{"] = "{P";
+	std::map<char, std::map<char, std::string>> lookUpTable;
+	lookUpTable['O']['{'] = "{P";
 
-	lookUpTable["P"]["}"] = "}";
-	lookUpTable["P"]["\""] = "\"S\":VQ}";
+	lookUpTable['P']['}'] = "}";
+	lookUpTable['P']['\"'] = "\"S\":VQ}";
 
-	lookUpTable["Q"]["}"] = "E";
-	lookUpTable["Q"][","] = ",\"S\":VQ";
+	lookUpTable['Q']['}'] = EPSILON;
+	lookUpTable['Q'][','] = ",\"S\":VQ";
 
-	lookUpTable["A"]["["] = "[B";
+	lookUpTable['A']['['] = "[B";
 
-	lookUpTable["B"]["{"] = "OC]";
-	lookUpTable["B"]["["] = "AC]";
-	lookUpTable["B"]["]"] = "]";
-	lookUpTable["B"]["\""] = "\"S\"C]";
-	lookUpTable["B"]["t"] = "trueC]";
-	lookUpTable["B"]["f"] = "falseC]";
-	lookUpTable["B"]["n"] = "nullC]";
+	lookUpTable['B']['{'] = "OC]";
+	lookUpTable['B']['['] = "AC]";
+	lookUpTable['B'][']'] = "]";
+	lookUpTable['B']['\"'] = "\"S\"C]";
+	lookUpTable['B']['t'] = "trueC]";
+	lookUpTable['B']['f'] = "falseC]";
+	lookUpTable['B']['n'] = "nullC]";
 	for (char i = '0'; i <= '9'; i++) {
-		lookUpTable["B"][std::string(1, i)] = "ZC]";
+		lookUpTable['B'][i] = "ZC]";
 	}
-	lookUpTable["B"]["-"] = "ZC]";
+	lookUpTable['B']['-'] = "ZC]";
 
-	lookUpTable["C"]["]"] = "E";
-	lookUpTable["C"][","] = ",VC";
+	lookUpTable['C'][']'] = EPSILON;
+	lookUpTable['C'][','] = ",VC";
 
-	lookUpTable["V"]["{"] = "O";
-	lookUpTable["V"]["["] = "A";
-	lookUpTable["V"]["\""] = "\"S\"";
-	lookUpTable["V"]["t"] = "true";
-	lookUpTable["V"]["f"] = "false";
-	lookUpTable["V"]["n"] = "null";
+	lookUpTable['V']['{'] = "O";
+	lookUpTable['V']['['] = "A";
+	lookUpTable['V']['\"'] = "\"S\"";
+	lookUpTable['V']['t'] = "true";
+	lookUpTable['V']['f'] = "false";
+	lookUpTable['V']['n'] = "null";
 	for (char i = '0'; i <= '9'; i++) {
-		lookUpTable["V"][std::string(1, i)] = "Z";
+		lookUpTable['V'][i] = "Z";
 	}
-	lookUpTable["V"]["-"] = "Z";
+	lookUpTable['V']['-'] = "Z";
 
-	lookUpTable["S"]["\\"] = "\\HS";
-	lookUpTable["S"]["\""] = "E";
+	lookUpTable['S']['\\'] = "\\HS";
+	lookUpTable['S']['\"'] = EPSILON;
 	//EVERYTHING else goes to <whatever char I found>S   
 
-	lookUpTable["H"]["\""] = "\"";
-	lookUpTable["H"]["\\"] = "\\";
-	lookUpTable["H"]["/"] = "/";
-	lookUpTable["H"]["b"] = "b";
-	lookUpTable["H"]["f"] = "f";
-	lookUpTable["H"]["n"] = "n";
-	lookUpTable["H"]["r"] = "r";
-	lookUpTable["H"]["t"] = "t";
-	lookUpTable["H"]["u"] = "uNNNN";
+	lookUpTable['H']['\"'] = "\"";
+	lookUpTable['H']['\\'] = "\\";
+	lookUpTable['H']['/'] = "/";
+	lookUpTable['H']['b'] = "b";
+	lookUpTable['H']['f'] = "f";
+	lookUpTable['H']['n'] = "n";
+	lookUpTable['H']['r'] = "r";
+	lookUpTable['H']['t'] = "t";
+	lookUpTable['H']['u'] = "uNNNN";
 
 	for (char i = '0'; i <= '9'; i++) {
-		lookUpTable["N"][std::string(1, i)] = std::string(1, i);
+		lookUpTable['N'][i] = std::string(1, i);
 	}
 	for (char i = 'a'; i <= 'f'; i++) {
-		lookUpTable["N"][std::string(1, i)] = std::string(1, i);
+		lookUpTable['N'][i] = std::string(1, i);
 	}
 	for (char i = 'A'; i <= 'F'; i++) {
-		lookUpTable["N"][std::string(1, i)] = std::string(1, i);
+		lookUpTable['N'][i] = std::string(1, i);
 	}
 
-	lookUpTable["Z"]["-"] = "-Y";
-	lookUpTable["Z"]["0"] = "0IJ";
+	lookUpTable['Z']['-'] = "-Y";
+	lookUpTable['Z']['0'] = "0IJ";
 	for (char i = '1'; i <= '9'; i++) {
-		lookUpTable["Z"][std::string(1, i)] = std::string(1, i) + "XIJ";
+		lookUpTable['Z'][i] = std::string(1, i) + "XIJ";
 	}
 
-	lookUpTable["Y"]["0"] = "0IJ";
+	lookUpTable['Y']['0'] = "0IJ";
 	for (char i = '1'; i <= '9'; i++) {
-		lookUpTable["Y"][std::string(1, i)] = std::string(1, i) + "XIJ";
+		lookUpTable['Y'][i] = std::string(1, i) + "XIJ";
 	}
 
 	for (char i = '0'; i <= '9'; i++) {
-		lookUpTable["X"][std::string(1, i)] = std::string(1, i) + "X";
+		lookUpTable['X'][i] = std::string(1, i) + "X";
 	}
-	lookUpTable["X"][","] = "E";
-	lookUpTable["X"]["]"] = "E";
-	lookUpTable["X"]["}"] = "E";
-	lookUpTable["X"]["."] = "E";
-	lookUpTable["X"]["e"] = "E";
-	lookUpTable["X"]["E"] = "E";
+	lookUpTable['X'][','] = EPSILON;
+	lookUpTable['X'][']'] = EPSILON;
+	lookUpTable['X']['}'] = EPSILON;
+	lookUpTable['X']['.'] = EPSILON;
+	lookUpTable['X']['e'] = EPSILON;
+	lookUpTable['X']['E'] = EPSILON;
 
-	lookUpTable["I"][","] = "E";
-	lookUpTable["I"]["]"] = "E";
-	lookUpTable["I"]["}"] = "E";
-	lookUpTable["I"]["."] = ".KX";
-	lookUpTable["I"]["e"] = "E";
-	lookUpTable["I"]["E"] = "E";
+	lookUpTable['I'][','] = EPSILON;
+	lookUpTable['I'][']'] = EPSILON;
+	lookUpTable['I']['}'] = EPSILON;
+	lookUpTable['I']['.'] = ".KX";
+	lookUpTable['I']['e'] = EPSILON;
+	lookUpTable['I']['E'] = EPSILON;
 
-	lookUpTable["J"][","] = "E";
-	lookUpTable["J"]["]"] = "E";
-	lookUpTable["J"]["}"] = "E";
-	lookUpTable["J"]["."] = ".KX";
-	lookUpTable["J"]["e"] = "eLKX";
-	lookUpTable["J"]["E"] = "ELKX";
+	lookUpTable['J'][','] = EPSILON;
+	lookUpTable['J'][']'] = EPSILON;
+	lookUpTable['J']['}'] = EPSILON;
+	lookUpTable['J']['.'] = ".KX";
+	lookUpTable['J']['e'] = "eLKX";
+	lookUpTable['J']['E'] = "ELKX";
 
 	for (char i = '0'; i <= '9'; i++) {
-		lookUpTable["K"][std::string(1, i)] = std::string(1, i);
+		lookUpTable['K'][i] = std::string(1, i);
 	}
 
-	lookUpTable["L"]["+"] = "+";
-	lookUpTable["L"]["-"] = "-";
+	lookUpTable['L']['+'] = "+";
+	lookUpTable['L']['-'] = "-";
 	for (char i = '0'; i <= '9'; i++) {
-		lookUpTable["K"][std::string(1, i)] = "E";
+		lookUpTable['K'][i] = EPSILON;
 	}
 
 	std::vector<std::string> files;
@@ -123,7 +123,7 @@ int main() {
 	for (auto& entry : std::filesystem::directory_iterator(path))
 		files.push_back(entry.path().string());
 
-	for (unsigned int fileNum = 1080; fileNum < files.size(); fileNum++) {											//HERE IS WHERE YOU CHANGE WHICH FILES YOU ITERATE THROUGHT		files.size()
+	for (unsigned int fileNum = 0; fileNum < files.size(); fileNum++) {											//HERE IS WHERE YOU CHANGE WHICH FILES YOU ITERATE THROUGHT		files.size()
 		std::ifstream file;
 		std::string fileContent = R"()";
 		std::string temp;
@@ -162,7 +162,7 @@ int main() {
 
 			while ((currentChar != stackTop) || (currentChar == 'S' && currentChar == stackTop && stackMachine.top() == '\"')) {
 
-				if (lookUpTable[std::string(1, stackTop)].size() == 0) {
+				if (lookUpTable[stackTop].size() == 0) {
 					std::cout << "stackTop is not a valid non terminal" << std::endl;
 					std::cout << "stackTop: " << stackTop << std::endl;
 					std::cout << "currentChar: " << currentChar << std::endl;
@@ -170,7 +170,7 @@ int main() {
 					return 1;
 				}
 
-				pushString = lookUpTable[std::string(1, stackTop)][std::string(1, currentChar)];
+				pushString = lookUpTable[stackTop][currentChar];
 				if (stackTop == 'S' && pushString.length() == 0) {	//S -> (currentChar)S
 					pushString = std::string(1, currentChar) + "S";
 				}
@@ -186,7 +186,7 @@ int main() {
 				}
 
 				//If it's not epsilon, push the string
-				if (pushString != "E" && pushString.length() != 0) {
+				if (pushString != EPSILON) {
 					for (int j = pushString.length() - 1; j >= 0; j--) {
 						stackMachine.push(pushString.at(j));
 					}
