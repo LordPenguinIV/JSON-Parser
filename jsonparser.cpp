@@ -12,54 +12,58 @@
 int main() {
 	std::map<std::string, std::map<std::string, std::string>> lookUpTable;
 	// z : (num)	E : epsilon
-	lookUpTable["O"]["{"] = "{WP";
+	// WAIT A SECOND, WHY ARE THESE MAPS STRINGS WHEN THEY COULD BE CHARS????????
+	lookUpTable["O"]["{"] = "{P";
 
 	lookUpTable["P"]["}"] = "}";
-	lookUpTable["P"]["s"] = "sW:VQ}";
+	lookUpTable["P"]["\""] = "\"S\":VQ}";
 
 	lookUpTable["Q"]["}"] = "E";
-	lookUpTable["Q"][","] = ",WsW:VQ";
+	lookUpTable["Q"][","] = ",\"S\":VQ";
 
-	lookUpTable["A"]["["] = "[WB";
+	lookUpTable["A"]["["] = "[B";
 
-	lookUpTable["B"]["{"] = "OWC]";
-	lookUpTable["B"]["["] = "AWC]";
+	lookUpTable["B"]["{"] = "OC]";
+	lookUpTable["B"]["["] = "AC]";
 	lookUpTable["B"]["]"] = "]";
-	lookUpTable["B"]["s"] = "sWC]";
-	lookUpTable["B"]["z"] = "zWC]";
-	lookUpTable["B"]["t"] = "trueWC]";
-	lookUpTable["B"]["f"] = "falseWC]";
-	lookUpTable["B"]["n"] = "nullWC]";
+	lookUpTable["B"]["\""] = "\"S\"C]";
+	lookUpTable["B"]["z"] = "zC]";
+	lookUpTable["B"]["t"] = "trueC]";
+	lookUpTable["B"]["f"] = "falseC]";
+	lookUpTable["B"]["n"] = "nullC]";
 	lookUpTable["B"]["w"] = "VC]";
 
 	lookUpTable["C"]["]"] = "E";
 	lookUpTable["C"][","] = ",VC";
 
-	lookUpTable["V"]["{"] = "OW";
-	lookUpTable["V"]["["] = "AW";
-	lookUpTable["V"]["s"] = "sW";
-	lookUpTable["V"]["z"] = "zW";
-	lookUpTable["V"]["t"] = "trueW";
-	lookUpTable["V"]["f"] = "falseW";
-	lookUpTable["V"]["n"] = "nullW";
-	lookUpTable["V"]["w"] = "WVW";
+	lookUpTable["V"]["{"] = "O";
+	lookUpTable["V"]["["] = "A";
+	lookUpTable["V"]["\""] = "\"S\"";
+	lookUpTable["V"]["z"] = "z";
+	lookUpTable["V"]["t"] = "true";
+	lookUpTable["V"]["f"] = "false";
+	lookUpTable["V"]["n"] = "null";
+	lookUpTable["V"]["w"] = "V";
 
-	lookUpTable["W"]["{"] = "E";
-	lookUpTable["W"]["}"] = "E";
-	lookUpTable["W"]["["] = "E";
-	lookUpTable["W"]["]"] = "E";
-	lookUpTable["W"][","] = "E";
-	lookUpTable["W"]["s"] = "E";
-	lookUpTable["W"]["z"] = "E";
-	lookUpTable["W"]["t"] = "E";
-	lookUpTable["W"]["f"] = "E";
-	lookUpTable["W"]["n"] = "E";
-	lookUpTable["W"]["w"] = "w";
-	lookUpTable["W"][":"] = "E";
+	lookUpTable["S"]["\\"] = "\\HS";
+	lookUpTable["S"]["\""] = "E";
+	//EVERYTHING else goes to E
 
-	std::regex stringRegex = std::regex(R"("(([^"\\])|\\["\/bfnrt\\]|\\u[0-9a-fA-F])*")");
+	lookUpTable["H"]["\""] = "\"";
+	lookUpTable["H"]["\\"] = "\\";
+	lookUpTable["H"]["/"] = "/";
+	lookUpTable["H"]["b"] = "b";
+	lookUpTable["H"]["f"] = "f";
+	lookUpTable["H"]["n"] = "n";
+	lookUpTable["H"]["r"] = "r";
+	lookUpTable["H"]["t"] = "t";
+	lookUpTable["H"]["u"] = "uNNNN";
+
+	//N goes to 0-9, a-f, and A-F
+
+	//std::regex stringRegex = std::regex(R"("(([^"\\])|\\["\/bfnrt\\]|\\u[0-9a-fA-F])*")");
 	std::regex numberRegex = std::regex(R"(-?([1-9][0-9]*|0)(\.[0-9]+)?([eE][-+]?[0-9]+)?)");
-	std::regex whitespaceRegex = std::regex(R"(\s+)");
+	//std::regex whitespaceRegex = std::regex(R"(\s+)");
 
 	std::vector<std::string> files;
 	std::string path = "D:\\JSON Files";
@@ -70,7 +74,7 @@ int main() {
 		std::ifstream file;
 		std::string fileContent = R"()";
 		std::string temp;
-		std::cout << fileNum << " / " << files.size() - 1 << " : " << files[fileNum] << std::endl;
+		std::cout << fileNum << " / " << files.size() - files.size() + 1 << " : " << files[fileNum] << std::endl;
 		file.open(files[fileNum]);
 		while (!file.eof()) {
 			getline(file, temp);
@@ -80,9 +84,9 @@ int main() {
 
 		try {
 			auto start = std::chrono::high_resolution_clock::now();
-			fileContent = regex_replace(fileContent, stringRegex, "s");
+			//fileContent = regex_replace(fileContent, stringRegex, "s");
 			fileContent = regex_replace(fileContent, numberRegex, "z");
-			fileContent = regex_replace(fileContent, whitespaceRegex, "w");
+			//fileContent = regex_replace(fileContent, whitespaceRegex, "w");
 			auto finish = std::chrono::high_resolution_clock::now();
 			std::cout << std::chrono::duration_cast<std::chrono::milliseconds>(finish - start).count() << "ms to complete regex\n";
 		}
@@ -99,49 +103,54 @@ int main() {
 
 		auto start = std::chrono::high_resolution_clock::now();
 		std::stack<char> stackMachine;
-		stackMachine.push('W'); //Incase there is whitespace before or after the object in the file read
 		stackMachine.push('O');
-		stackMachine.push('W');
+		//stackMachine.push('W');
 
 		for (unsigned int i = 0; i < fileContent.length(); i++) {
+
+			std::string pushString = "";
+			char currentChar = fileContent.at(i);	
+			char stackTop = stackMachine.top();
+			if ((currentChar == ' ' || currentChar == '\n' || currentChar == '\t' || currentChar == '\r') && stackTop != 'S') {
+				continue;
+			}
+
 			//Stack machine should not be empty yet
 			if (stackMachine.empty()) {
-				std::cout << "Stack is empty" << std::endl;
-				std::cout << fileContent.substr(0, i) << " ^ " << fileContent.substr(i) << std::endl;
+				std::cout << "Stack is empty pt 1" << std::endl;
+				std::cout << fileContent.substr(0, i) << "  ^  " << fileContent.substr(i) << std::endl;
 				return 1;
 			}
 
-			std::string pushString = "";
-			char currentChar = fileContent.at(i);
-			char stackTop = stackMachine.top();
 			stackMachine.pop();
 
 			while (currentChar != stackTop) {
-				//std::cout << "START CHECK: stackTop: " << stackTop << std::endl;
-				//std::cout << "START CHECK: currentChar: " << currentChar << std::endl;
 
 				if (lookUpTable[std::string(1, stackTop)].size() == 0) {
 					std::cout << "stackTop is not a valid non terminal" << std::endl;
 					std::cout << "stackTop: " << stackTop << std::endl;
 					std::cout << "currentChar: " << currentChar << std::endl;
-					std::cout << fileContent.substr(0, i) << " ^ " << fileContent.substr(i) << std::endl;
+					std::cout << fileContent.substr(0, i) << "  ^  " << fileContent.substr(i) << std::endl;
 					return 1;
 				}
 
 				pushString = lookUpTable[std::string(1, stackTop)][std::string(1, currentChar)];
-				//std::cout << std::string(1, stackTop) << " -> " << pushString << std::endl;			//HERE IT IS SO YOU CAN SEE IT EVERY TIME YOU GO LOOKING FOR IT
+				if (stackTop == 'S' && pushString.length() == 0) {
+					pushString = std::string(1, currentChar) + "S";
+				}
+				std::cout << std::string(1, stackTop) << " -> " << pushString << std::endl;			//HERE IT IS SO YOU CAN SEE IT EVERY TIME YOU GO LOOKING FOR IT
 
 				//The character being read should be apart of the character in the look up table
 				if (pushString.length() == 0) {
 					std::cout << "currentChar does not exist for stackTop" << std::endl;
 					std::cout << "stackTop: " << stackTop << std::endl;
 					std::cout << "currentChar: " << currentChar << std::endl;
-					std::cout << fileContent.substr(0, i) << " ^ " << fileContent.substr(i) << std::endl;
+					std::cout << fileContent.substr(0, i) << "  ^  " << fileContent.substr(i) << std::endl;
 					return 1;
 				}
 
 				//If it's not epsilon, push the string
-				if (pushString != "E") {
+				if (pushString != "E" && pushString.length() != 0) {
 					for (int j = pushString.length() - 1; j >= 0; j--) {
 						stackMachine.push(pushString.at(j));
 					}
@@ -149,8 +158,8 @@ int main() {
 
 				//Stack machine still should not be empty yet
 				if (stackMachine.empty()) {
-					std::cout << "Stack is empty" << std::endl;
-					std::cout << fileContent.substr(0, i) << " ^ " << fileContent.substr(i) << std::endl;
+					std::cout << "Stack is empty pt 2" << std::endl;
+					std::cout << fileContent.substr(0, i) << "  ^  " << fileContent.substr(i) << std::endl;
 					return 1;
 				}
 
