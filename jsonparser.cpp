@@ -8,7 +8,7 @@
 #include <map>
 #include <chrono>
 
-constexpr auto EPSILON = "E";
+#define EPSILON "E"
 
 
 int main() {
@@ -125,36 +125,30 @@ int main() {
 
 	for (unsigned int fileNum = 0; fileNum < files.size(); fileNum++) {											//HERE IS WHERE YOU CHANGE WHICH FILES YOU ITERATE THROUGHT		files.size()
 		std::ifstream file;
-		std::string fileContent = R"()";
-		std::string temp;
-		std::cout << fileNum << " / " << files.size() - 1 << " : " << files[fileNum] << std::endl;
-		file.open(files[fileNum]);
-		while (!file.eof()) {
-			getline(file, temp);
-			fileContent += temp + "\n";
-		}
-		file.close();
-
-		auto start = std::chrono::high_resolution_clock::now();
 		std::stack<char> stackMachine;
+		char currentChar;
+		std::string pushString;
+		char stackTop;
+
+		std::cout << fileNum << " / " << files.size() - 1 << " : " << files[fileNum] << std::endl;
+		auto start = std::chrono::high_resolution_clock::now();
+
 		stackMachine.push('V');
 
-		for (unsigned int i = 0; i < fileContent.length(); i++) {
+		file.open(files[fileNum]);
+		while (file.get(currentChar)) {
+			pushString = "";
 
-			std::string pushString = "";
-			char currentChar = fileContent.at(i);
-			
 			//Skip whitespace unless I'm in the middle of a string
 			//Hmmm, or I can actually just always skip it...
 			if ((currentChar == ' ' || currentChar == '\n' || currentChar == '\t' || currentChar == '\r') ) {
 				continue;
 			}
-			char stackTop = stackMachine.top();
+			stackTop = stackMachine.top();
 
 			//Stack machine should not be empty yet
 			if (stackMachine.empty()) {
 				std::cout << "Stack is empty pt 1" << std::endl;
-				std::cout << fileContent.substr(0, i) << "  ^  " << fileContent.substr(i) << std::endl;
 				return 1;
 			}
 
@@ -166,7 +160,6 @@ int main() {
 					std::cout << "stackTop is not a valid non terminal" << std::endl;
 					std::cout << "stackTop: " << stackTop << std::endl;
 					std::cout << "currentChar: " << currentChar << std::endl;
-					std::cout << fileContent.substr(0, i) << "  ^  " << fileContent.substr(i) << std::endl;
 					return 1;
 				}
 
@@ -181,7 +174,6 @@ int main() {
 					std::cout << "currentChar does not exist for stackTop" << std::endl;
 					std::cout << "stackTop: " << stackTop << std::endl;
 					std::cout << "currentChar: " << currentChar << std::endl;
-					std::cout << fileContent.substr(0, i) << "  ^  " << fileContent.substr(i) << std::endl;
 					return 1;
 				}
 
@@ -195,7 +187,6 @@ int main() {
 				//Stack machine still should not be empty yet
 				if (stackMachine.empty()) {
 					std::cout << "Stack is empty pt 2" << std::endl;
-					std::cout << fileContent.substr(0, i) << "  ^  " << fileContent.substr(i) << std::endl;
 					return 1;
 				}
 
@@ -214,5 +205,6 @@ int main() {
 		auto finish = std::chrono::high_resolution_clock::now();
 		std::cout << std::chrono::duration_cast<std::chrono::milliseconds>(finish - start).count() << "ms to complete stack machine\n";
 		std::cout << "\n\n\n\n\n";
+		file.close();
 	}
 }
